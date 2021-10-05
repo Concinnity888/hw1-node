@@ -36,11 +36,13 @@ app.use(multer({ storage: storage, fileFilter: fileFilter }).single('image'));
 
 app.post('/upload', async (req, res) => {
   try {
-    if(!req.files) {
+    const filedata = req.file;
+
+    if(!filedata) {
       return res.sendStatus(400);
     } else {
       const id = generateId();
-      const { originalname, size } = req.files;
+      const { originalname, size } = filedata;
       const createdAt = Date.now();
       const file = { id, originalname, size, createdAt };
 
@@ -48,7 +50,7 @@ app.post('/upload', async (req, res) => {
         if (err) {
           return res.status(500).send(err);
         } else {
-          return res.json(file);
+          return res.json({ id });
         }
       });
     }
