@@ -173,7 +173,7 @@ app.get('/merge', async (req, res) => {
 
     replaceBackground(frontImage, backImage, currentColors, currentThreshold)
       .then((readableStream) => {
-        // res.setHeader('Content-Type', 'image/jpeg');
+        res.setHeader('Content-Type', 'image/jpeg');
         readableStream.pipe(res);
       });
   } catch (err) {
