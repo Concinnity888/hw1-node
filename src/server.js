@@ -8,7 +8,6 @@ const multer = require('multer');
 const { generateId } = require('./utils/generateId');
 const sizeOf = require('image-size');
 const { replaceBackground } = require('backrem');
-const e = require('express');
 
 const app = express();
 
