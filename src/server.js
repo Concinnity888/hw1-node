@@ -108,6 +108,8 @@ app.delete('/image/:id', async (req, res) => {
       if (err) {
         return res.status(500).send(err);
       }
+
+      return res.json({ id: imageId });
     });
   } catch (err) {
     res.status(500).send(err);
