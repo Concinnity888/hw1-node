@@ -103,31 +103,11 @@ app.get('/image/:id', async (req, res) => {
 app.delete('/image/:id', async (req, res) => {
   try {
     const imageId = req.params.id;
-    let fileName;
-
-    db.findOne({ id: imageId }, function (err, image) {
-      if (err) {
-        return res.status(500).send(err);
-      } else {
-        if (image === null) {
-          return res.sendStatus(400);
-        } else {
-          fileName = image?.originalname;
-        }
-      }
-    });
 
     db.remove({ id: imageId }, {}, function (err, numRemoved) {
       if (err) {
         return res.status(500).send(err);
       }
-
-
-      fs.unlink(`${imageFolder}/${fileName}`, function(err){
-        if (err) {
-          return res.status(500).send(err);
-        }
-      });
     });
   } catch (err) {
     res.status(500).send(err);
