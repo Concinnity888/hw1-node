@@ -32,25 +32,24 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-app.use(multer({ storage: storage, fileFilter: fileFilter }).any());
+app.use(multer({ storage: storage, fileFilter: fileFilter }).single('image'));
 
 app.post('/upload', async (req, res) => {
   try {
     if(!req.files) {
       return res.sendStatus(400);
     } else {
-      req.files.forEach((file) => {
-        const id = generateId();
-        const { originalname, size } = file;
-        const createdAt = Date.now();
+      const id = generateId();
+      const { originalname, size } = req.files;
+      const createdAt = Date.now();
+      const file = { id, originalname, size, createdAt };
 
-        db.insert({ id, originalname, size, createdAt }, function (err, newImages) {
-          if (err) {
-            return res.status(500).send(err);
-          } else {
-            return res.json(id);
-          }
-        });
+      db.insert(file, function (err, newImages) {
+        if (err) {
+          return res.status(500).send(err);
+        } else {
+          return res.json(file);
+        }
       });
     }
   } catch (err) {
@@ -65,8 +64,8 @@ app.get('/list', async (req, res) => {
         return res.status(500).send(err);
       } else {
         const formattedAllImages = allImages.reduce((allImages, image) => {
-          const { id, size, createdAt } = image;
-          allImages.push({ id, size, createdAt });
+          const { id, size, createdAt, originalname } = image;
+          allImages.push({ id, size, createdAt, originalname });
 
           return allImages;
         }, []);
@@ -141,7 +140,7 @@ app.get('/merge', async (req, res) => {
     const currentThreshold = Number(threshold) || 0;
 
     function getImage (currentId) {
-      return  new Promise((resolve, reject) => {
+      return new Promise((resolve, reject) => {
         db.findOne({ id: currentId }, (err, image) => {
           if (err) {
             return reject(err);
